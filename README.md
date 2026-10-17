@@ -2,7 +2,6 @@
 
 An academic web API security testing framework that combines OpenAPI analysis, LLM-assisted attack-scenario generation, HTTP fuzzing, and structured reporting. The project is designed as a controlled lab for studying broken authorization and business-logic weaknesses in APIs.
 
-> This repository is a personal mirror of the group project originally published at [PeaMatNgu/CDCS](https://github.com/PeaMatNgu/CDCS). The implementation and academic work were developed as a group project; this mirror preserves the original source structure and attribution for portfolio and learning purposes.
 
 ## What it demonstrates
 
@@ -92,6 +91,3 @@ The fuzzer resolves account passwords from environment-variable references in `s
 
 This project demonstrates practical SOC and application-security skills: HTTP request/response analysis, API inventory, authentication-context handling, authorization testing, reproducible evidence collection, structured findings, and security-focused reporting. It is intended to complement a SOC Intern portfolio alongside networking, Linux, Wireshark, Nmap, Burp Suite, SIEM, and incident-response fundamentals.
 
-## Attribution
-
-Original repository: [github.com/PeaMatNgu/CDCS](https://github.com/PeaMatNgu/CDCS). This mirror does not claim sole authorship of the underlying group project.
