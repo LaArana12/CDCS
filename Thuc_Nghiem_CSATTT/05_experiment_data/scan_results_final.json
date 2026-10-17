@@ -1,0 +1,16 @@
+{
+  "scan_meta": {
+    "base_url": "http://localhost:8000",
+    "generated_at_unix": 0,
+    "total_scenarios": 0,
+    "detected_count": 0,
+    "login_status": {
+      "attacker_user": "not-run",
+      "victim_user": "not-run",
+      "system_admin": "not-run"
+    },
+    "note": "Sanitized placeholder artifact. Run the fuzzer locally to generate results; credentials and password hashes are intentionally excluded from committed output."
+  },
+  "results": []
+}
+

@@ -1,0 +1,43 @@
+services:
+  # PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: target_lab_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB in .env}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # FastAPI Target Lab
+  web_api:
+    build: .
+    container_name: target_lab_api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount source code Target Lab vào /app
+      - .:/app
+
+      # Mount file kết quả Fuzzer từ thư mục cùng cấp 05_experiment_data
+      # vào đúng đường dẫn mà main.py sẽ đọc:
+      # Path("/app/scan_results_final.json")
+      - ../05_experiment_data:/app/05_experiment_data:ro
+
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in .env}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?Set JWT_SECRET_KEY in .env}
+      CDCS_VICTIM_PASSWORD: ${CDCS_VICTIM_PASSWORD:?Set CDCS_VICTIM_PASSWORD in .env}
+      CDCS_ATTACKER_PASSWORD: ${CDCS_ATTACKER_PASSWORD:?Set CDCS_ATTACKER_PASSWORD in .env}
+      CDCS_ADMIN_PASSWORD: ${CDCS_ADMIN_PASSWORD:?Set CDCS_ADMIN_PASSWORD in .env}
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
+

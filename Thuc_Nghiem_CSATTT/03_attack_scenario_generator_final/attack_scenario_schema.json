@@ -1,0 +1,242 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AttackScenarioSet",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "generated_from",
+    "scenarios"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "2.0"
+    },
+    "generated_from": {
+      "type": "object",
+      "required": [
+        "parser_output_version",
+        "api_title",
+        "base_url"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "parser_output_version": {
+          "type": "string"
+        },
+        "api_title": {
+          "type": "string"
+        },
+        "base_url": {
+          "type": "string"
+        },
+        "generator": {
+          "type": "string",
+          "enum": [
+            "Template",
+            "Gemini API",
+            "Template fallback"
+          ]
+        },
+        "model": {
+          "type": "string"
+        }
+      }
+    },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/scenario"
+      }
+    }
+  },
+  "$defs": {
+    "scenario": {
+      "type": "object",
+      "required": [
+        "scenario_id",
+        "source_endpoint_id",
+        "vulnerability_type",
+        "target",
+        "auth_context",
+        "request",
+        "expected_secure_behavior",
+        "suspicious_behavior",
+        "validation_steps",
+        "reason_summary",
+        "priority",
+        "in_scope"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "scenario_id": {
+          "type": "string"
+        },
+        "source_endpoint_id": {
+          "type": "string"
+        },
+        "vulnerability_type": {
+          "type": "string",
+          "enum": [
+            "MASS_ASSIGNMENT",
+            "BOLA",
+            "BFLA"
+          ]
+        },
+        "target": {
+          "type": "object",
+          "required": [
+            "method",
+            "path"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "method": {
+              "type": "string"
+            },
+            "path": {
+              "type": "string"
+            }
+          }
+        },
+        "auth_context": {
+          "type": "object",
+          "required": [
+            "attacker_user",
+            "victim_user",
+            "admin_user",
+            "token_source"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "attacker_user": {
+              "type": "string"
+            },
+            "victim_user": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "admin_user": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "token_source": {
+              "type": "string",
+              "enum": [
+                "NONE",
+                "ATTACKER",
+                "VICTIM",
+                "ADMIN"
+              ]
+            }
+          }
+        },
+        "request": {
+          "type": "object",
+          "required": [
+            "method",
+            "path",
+            "path_params",
+            "query_params",
+            "headers",
+            "body"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "method": {
+              "type": "string"
+            },
+            "path": {
+              "type": "string"
+            },
+            "path_params": {
+              "type": "object"
+            },
+            "query_params": {
+              "type": "object"
+            },
+            "headers": {
+              "type": "object"
+            },
+            "body": {
+              "type": [
+                "object",
+                "null"
+              ]
+            }
+          }
+        },
+        "expected_secure_behavior": {
+          "type": "object",
+          "required": [
+            "status_codes",
+            "description"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "status_codes": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": {
+              "type": "string"
+            }
+          }
+        },
+        "suspicious_behavior": {
+          "type": "object",
+          "required": [
+            "status_codes",
+            "description",
+            "evidence_fields"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "status_codes": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            "description": {
+              "type": "string"
+            },
+            "evidence_fields": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "validation_steps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reason_summary": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "string",
+          "enum": [
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ]
+        },
+        "in_scope": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

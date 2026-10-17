@@ -1,0 +1,11 @@
+{
+  "scan_meta": {
+    "base_url": "http://localhost:8000",
+    "generated_at_unix": 0,
+    "total_scenarios": 0,
+    "detected_count": 0,
+    "note": "Sanitized placeholder artifact; generate results locally with the fuzzer."
+  },
+  "results": []
+}
+

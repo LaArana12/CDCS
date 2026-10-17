@@ -1,0 +1,28 @@
+{
+  "base_url": "http://localhost:8000",
+  "accounts": {
+    "victim_user": {
+      "username": "victim_user",
+      "password": "${CDCS_VICTIM_PASSWORD}",
+      "role": "user",
+      "note": "Chủ sở hữu order_id=1001"
+    },
+    "attacker_user": {
+      "username": "attacker_user",
+      "password": "${CDCS_ATTACKER_PASSWORD}",
+      "role": "user",
+      "note": "Tài khoản dùng để khai thác BOLA/BFLA/Mass Assignment"
+    },
+    "system_admin": {
+      "username": "system_admin",
+      "password": "${CDCS_ADMIN_PASSWORD}",
+      "role": "admin",
+      "note": "Tài khoản admin để đối chiếu hành vi hợp lệ"
+    }
+  },
+  "known_objects": {
+    "victim_order_id": 1001
+  },
+  "auth_header_format": "Authorization: Bearer <access_token>"
+}
+

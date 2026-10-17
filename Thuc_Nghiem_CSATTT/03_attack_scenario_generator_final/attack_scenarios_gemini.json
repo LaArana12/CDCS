@@ -1,0 +1,275 @@
+{
+  "schema_version": "2.0",
+  "generated_from": {
+    "parser_output_version": "1.0",
+    "api_title": "Target Lab API",
+    "base_url": "http://localhost:8000",
+    "generator": "Gemini API",
+    "model": "gemini-2.5-flash-lite"
+  },
+  "scenarios": [
+    {
+      "scenario_id": "MASS_ASSIGNMENT_EP_001",
+      "source_endpoint_id": "EP_001",
+      "vulnerability_type": "MASS_ASSIGNMENT",
+      "target": {
+        "method": "POST",
+        "path": "/api/auth/register"
+      },
+      "auth_context": {
+        "attacker_user": "anonymous_new_user",
+        "victim_user": null,
+        "admin_user": null,
+        "token_source": "NONE"
+      },
+      "request": {
+        "method": "POST",
+        "path": "/api/auth/register",
+        "path_params": {},
+        "query_params": {},
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "username": "evil_admin_user",
+          "email": "evil_admin_user@test.com",
+          "password": "${CDCS_REGISTRATION_PASSWORD}",
+          "role": "admin"
+        }
+      },
+      "expected_secure_behavior": {
+        "status_codes": [
+          201
+        ],
+        "description": "User registration should fail if an unauthorized role is provided."
+      },
+      "suspicious_behavior": {
+        "status_codes": [
+          201
+        ],
+        "description": "User registration succeeds with an admin role injected into the request body, despite not being an admin.",
+        "evidence_fields": [
+          "role"
+        ]
+      },
+      "validation_steps": [
+        "Send a POST request to /api/auth/register with a valid user payload and add 'role': 'admin' to the request body.",
+        "Observe the response status code and body.",
+        "Verify that the user is registered with admin privileges or that the role injection was successful."
+      ],
+      "reason_summary": "The registration endpoint allows mass assignment by accepting additional fields in the request body, potentially granting unauthorized privileges.",
+      "priority": "HIGH",
+      "in_scope": true
+    },
+    {
+      "scenario_id": "MASS_ASSIGNMENT_EP_004",
+      "source_endpoint_id": "EP_004",
+      "vulnerability_type": "MASS_ASSIGNMENT",
+      "target": {
+        "method": "PATCH",
+        "path": "/api/users/me"
+      },
+      "auth_context": {
+        "attacker_user": "attacker_user",
+        "victim_user": null,
+        "admin_user": null,
+        "token_source": "ATTACKER"
+      },
+      "request": {
+        "method": "PATCH",
+        "path": "/api/users/me",
+        "path_params": {},
+        "query_params": {},
+        "headers": {
+          "Authorization": "Bearer <attacker_token>",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "full_name": "Attacker Updated",
+          "phone_number": "0988888888",
+          "address": "Updated Address",
+          "role": "admin"
+        }
+      },
+      "expected_secure_behavior": {
+        "status_codes": [
+          200
+        ],
+        "description": "User profile update should succeed without changing the user's role."
+      },
+      "suspicious_behavior": {
+        "status_codes": [
+          200
+        ],
+        "description": "User profile update succeeds with an admin role injected into the request body, despite not being an admin.",
+        "evidence_fields": [
+          "role"
+        ]
+      },
+      "validation_steps": [
+        "Send a PATCH request to /api/users/me with a valid user update payload and add 'role': 'admin' to the request body.",
+        "Observe the response status code and body.",
+        "Verify that the user's role has been changed to admin."
+      ],
+      "reason_summary": "The user update endpoint allows mass assignment by accepting additional fields in the request body, potentially granting unauthorized privileges.",
+      "priority": "HIGH",
+      "in_scope": true
+    },
+    {
+      "scenario_id": "BOLA_EP_006",
+      "source_endpoint_id": "EP_006",
+      "vulnerability_type": "BOLA",
+      "target": {
+        "method": "GET",
+        "path": "/api/orders/{order_id}"
+      },
+      "auth_context": {
+        "attacker_user": "attacker_user",
+        "victim_user": "victim_user",
+        "admin_user": null,
+        "token_source": "ATTACKER"
+      },
+      "request": {
+        "method": "GET",
+        "path": "/api/orders/1001",
+        "path_params": {
+          "order_id": 1001
+        },
+        "query_params": {},
+        "headers": {
+          "Authorization": "Bearer <attacker_token>"
+        },
+        "body": null
+      },
+      "expected_secure_behavior": {
+        "status_codes": [
+          403
+        ],
+        "description": "The attacker should not be able to access orders belonging to the victim user."
+      },
+      "suspicious_behavior": {
+        "status_codes": [
+          200
+        ],
+        "description": "The attacker can access orders belonging to the victim user by manipulating the order_id.",
+        "evidence_fields": [
+          "order_id"
+        ]
+      },
+      "validation_steps": [
+        "Obtain an attacker's authentication token.",
+        "Send a GET request to /api/orders/1001 using the attacker's token.",
+        "Observe the response status code and body.",
+        "Verify that the attacker can view the victim's order details."
+      ],
+      "reason_summary": "The endpoint does not properly check if the authenticated user has permission to access the requested order, allowing access to another user's order.",
+      "priority": "HIGH",
+      "in_scope": true
+    },
+    {
+      "scenario_id": "BFLA_EP_008",
+      "source_endpoint_id": "EP_008",
+      "vulnerability_type": "BFLA",
+      "target": {
+        "method": "GET",
+        "path": "/api/admin/users"
+      },
+      "auth_context": {
+        "attacker_user": "attacker_user",
+        "victim_user": null,
+        "admin_user": "system_admin",
+        "token_source": "ATTACKER"
+      },
+      "request": {
+        "method": "GET",
+        "path": "/api/admin/users",
+        "path_params": {},
+        "query_params": {},
+        "headers": {
+          "Authorization": "Bearer <attacker_token>"
+        },
+        "body": null
+      },
+      "expected_secure_behavior": {
+        "status_codes": [
+          403
+        ],
+        "description": "A regular user should not be able to access the admin endpoint /api/admin/users."
+      },
+      "suspicious_behavior": {
+        "status_codes": [
+          200
+        ],
+        "description": "A regular user can access the admin endpoint /api/admin/users.",
+        "evidence_fields": [
+          "Authorization"
+        ]
+      },
+      "validation_steps": [
+        "Obtain an attacker's authentication token.",
+        "Send a GET request to /api/admin/users using the attacker's token.",
+        "Observe the response status code and body.",
+        "Verify that the attacker can access the admin endpoint and retrieve user data."
+      ],
+      "reason_summary": "The admin endpoint /api/admin/users is accessible by a regular user, indicating a lack of proper authorization checks.",
+      "priority": "HIGH",
+      "in_scope": true
+    },
+    {
+      "scenario_id": "BFLA_EP_009",
+      "source_endpoint_id": "EP_009",
+      "vulnerability_type": "BFLA",
+      "target": {
+        "method": "PATCH",
+        "path": "/api/admin/orders/{order_id}/status"
+      },
+      "auth_context": {
+        "attacker_user": "attacker_user",
+        "victim_user": null,
+        "admin_user": "system_admin",
+        "token_source": "ATTACKER"
+      },
+      "request": {
+        "method": "PATCH",
+        "path": "/api/admin/orders/1001/status",
+        "path_params": {
+          "order_id": 1001
+        },
+        "query_params": {},
+        "headers": {
+          "Authorization": "Bearer <attacker_token>",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "status": "Completed"
+        }
+      },
+      "expected_secure_behavior": {
+        "status_codes": [
+          403
+        ],
+        "description": "A regular user should not be able to update the status of an order via the admin endpoint /api/admin/orders/{order_id}/status."
+      },
+      "suspicious_behavior": {
+        "status_codes": [
+          200
+        ],
+        "description": "A regular user can update the status of an order via the admin endpoint /api/admin/orders/{order_id}/status.",
+        "evidence_fields": [
+          "Authorization",
+          "status"
+        ]
+      },
+      "validation_steps": [
+        "Obtain an attacker's authentication token.",
+        "Send a PATCH request to /api/admin/orders/1001/status with a valid status payload using the attacker's token.",
+        "Observe the response status code and body.",
+        "Verify that the attacker can update the order status."
+      ],
+      "reason_summary": "The admin endpoint /api/admin/orders/{order_id}/status is accessible by a regular user, indicating a lack of proper authorization checks.",
+      "priority": "HIGH",
+      "in_scope": true
+    }
+  ]
+}
+

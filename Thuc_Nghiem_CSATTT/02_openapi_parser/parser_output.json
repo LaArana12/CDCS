@@ -1,0 +1,504 @@
+{
+  "api_info": {
+    "title": "Target Lab API",
+    "version": "1.0",
+    "openapi_version": "3.1.0",
+    "base_url": "http://localhost:8000"
+  },
+  "risk_hint_values": [
+    "MASS_ASSIGNMENT",
+    "BOLA",
+    "BFLA",
+    "AUTH",
+    "NORMAL"
+  ],
+  "parser_meta": {
+    "parser_name": "TV2 OpenAPI Parser",
+    "parser_version": "1.0",
+    "source": "openapi.json",
+    "description": "Chuẩn hóa endpoint từ OpenAPI để phục vụ LLM sinh kịch bản kiểm thử."
+  },
+  "endpoints": [
+    {
+      "endpoint_id": "EP_001",
+      "path": "/api/auth/register",
+      "method": "POST",
+      "summary": "Register User",
+      "description": "",
+      "operation_id": "register_user_api_auth_register_post",
+      "security": {
+        "required": false,
+        "schemes": [],
+        "type": null,
+        "scheme": null,
+        "header": null,
+        "token_format": null
+      },
+      "parameters": [],
+      "request_body": {
+        "required": true,
+        "content_type": "application/json",
+        "schema_ref": "#/components/schemas/UserRegisterRequest",
+        "schema_title": "UserRegisterRequest",
+        "fields": [
+          {
+            "name": "username",
+            "type": "string",
+            "required": true,
+            "sensitive": false,
+            "source": "openapi_schema",
+            "description": ""
+          },
+          {
+            "name": "email",
+            "type": "string",
+            "required": true,
+            "sensitive": false,
+            "source": "openapi_schema",
+            "description": ""
+          },
+          {
+            "name": "password",
+            "type": "string",
+            "required": true,
+            "sensitive": true,
+            "source": "openapi_schema",
+            "description": ""
+          }
+        ],
+        "allows_additional_properties": true,
+        "candidate_injected_fields": [
+          {
+            "name": "role",
+            "type": "string",
+            "sample_value": "admin",
+            "reason": "Field role không nằm trong schema chính thức nhưng có thể bị chèn nếu backend cho phép extra fields."
+          }
+        ]
+      },
+      "responses": [
+        {
+          "status_code": "201",
+          "description": "Successful Response"
+        },
+        {
+          "status_code": "422",
+          "description": "Validation Error"
+        }
+      ],
+      "risk_hints": [
+        "MASS_ASSIGNMENT"
+      ],
+      "reason": "Endpoint có request body cho thao tác tạo/cập nhật dữ liệu người dùng và schema cho phép thêm field ngoài mô tả, cần thử chèn các field nhạy cảm."
+    },
+    {
+      "endpoint_id": "EP_002",
+      "path": "/api/auth/login",
+      "method": "POST",
+      "summary": "Login",
+      "description": "",
+      "operation_id": "login_api_auth_login_post",
+      "security": {
+        "required": false,
+        "schemes": [],
+        "type": null,
+        "scheme": null,
+        "header": null,
+        "token_format": null
+      },
+      "parameters": [],
+      "request_body": {
+        "required": true,
+        "content_type": "application/json",
+        "schema_ref": "#/components/schemas/LoginRequest",
+        "schema_title": "LoginRequest",
+        "fields": [
+          {
+            "name": "username",
+            "type": "string",
+            "required": true,
+            "sensitive": false,
+            "source": "openapi_schema",
+            "description": ""
+          },
+          {
+            "name": "password",
+            "type": "string",
+            "required": true,
+            "sensitive": true,
+            "source": "openapi_schema",
+            "description": ""
+          }
+        ],
+        "allows_additional_properties": false,
+        "candidate_injected_fields": []
+      },
+      "responses": [
+        {
+          "status_code": "200",
+          "description": "Successful Response"
+        },
+        {
+          "status_code": "422",
+          "description": "Validation Error"
+        }
+      ],
+      "risk_hints": [
+        "AUTH"
+      ],
+      "reason": "Endpoint đăng nhập dùng để lấy Bearer token phục vụ kiểm thử các endpoint cần xác thực."
+    },
+    {
+      "endpoint_id": "EP_003",
+      "path": "/api/users/me",
+      "method": "GET",
+      "summary": "Get My Profile",
+      "description": "",
+      "operation_id": "get_my_profile_api_users_me_get",
+      "security": {
+        "required": true,
+        "schemes": [
+          "HTTPBearer"
+        ],
+        "type": "http",
+        "scheme": "bearer",
+        "header": "Authorization",
+        "token_format": "Bearer <token>"
+      },
+      "parameters": [],
+      "request_body": null,
+      "responses": [
+        {
+          "status_code": "200",
+          "description": "Successful Response"
+        }
+      ],
+      "risk_hints": [
+        "NORMAL"
+      ],
+      "reason": "Endpoint phục vụ luồng nghiệp vụ cơ bản của Target Lab, chưa có dấu hiệu trực tiếp thuộc các nhóm lỗ hổng trọng tâm BOLA, BFLA hoặc Mass Assignment."
+    },
+    {
+      "endpoint_id": "EP_004",
+      "path": "/api/users/me",
+      "method": "PATCH",
+      "summary": "Update Profile",
+      "description": "",
+      "operation_id": "update_profile_api_users_me_patch",
+      "security": {
+        "required": true,
+        "schemes": [
+          "HTTPBearer"
+        ],
+        "type": "http",
+        "scheme": "bearer",
+        "header": "Authorization",
+        "token_format": "Bearer <token>"
+      },
+      "parameters": [],
+      "request_body": {
+        "required": true,
+        "content_type": "application/json",
+        "schema_ref": "#/components/schemas/UserUpdateRequest",
+        "schema_title": "UserUpdateRequest",
+        "fields": [
+          {
+            "name": "full_name",
+            "type": "string | null",
+            "required": false,
+            "sensitive": false,
+            "source": "openapi_schema",
+            "description": ""
+          },
+          {
+            "name": "phone_number",
+            "type": "string | null",
+            "required": false,
+            "sensitive": false,
+            "source": "openapi_schema",
+            "description": ""
+          },
+          {
+            "name": "address",
+            "type": "string | null",
+            "required": false,
+            "sensitive": false,
+            "source": "openapi_schema",
+            "description": ""
+          }
+        ],
+        "allows_additional_properties": true,
+        "candidate_injected_fields": [
+          {
+            "name": "role",
+            "type": "string",
+            "sample_value": "admin",
+            "reason": "Field role không nằm trong schema chính thức nhưng có thể bị chèn nếu backend cho phép extra fields."
+          }
+        ]
+      },
+      "responses": [
+        {
+          "status_code": "200",
+          "description": "Successful Response"
+        },
+        {
+          "status_code": "422",
+          "description": "Validation Error"
+        }
+      ],
+      "risk_hints": [
+        "MASS_ASSIGNMENT"
+      ],
+      "reason": "Endpoint có request body cho thao tác tạo/cập nhật dữ liệu người dùng và schema cho phép thêm field ngoài mô tả, cần thử chèn các field nhạy cảm."
+    },
+    {
+      "endpoint_id": "EP_005",
+      "path": "/api/products",
+      "method": "GET",
+      "summary": "Get Products",
+      "description": "",
+      "operation_id": "get_products_api_products_get",
+      "security": {
+        "required": false,
+        "schemes": [],
+        "type": null,
+        "scheme": null,
+        "header": null,
+        "token_format": null
+      },
+      "parameters": [],
+      "request_body": null,
+      "responses": [
+        {
+          "status_code": "200",
+          "description": "Successful Response"
+        }
+      ],
+      "risk_hints": [
+        "NORMAL"
+      ],
+      "reason": "Endpoint phục vụ luồng nghiệp vụ cơ bản của Target Lab, chưa có dấu hiệu trực tiếp thuộc các nhóm lỗ hổng trọng tâm BOLA, BFLA hoặc Mass Assignment."
+    },
+    {
+      "endpoint_id": "EP_006",
+      "path": "/api/orders/{order_id}",
+      "method": "GET",
+      "summary": "Get Order Detail",
+      "description": "",
+      "operation_id": "get_order_detail_api_orders__order_id__get",
+      "security": {
+        "required": true,
+        "schemes": [
+          "HTTPBearer"
+        ],
+        "type": "http",
+        "scheme": "bearer",
+        "header": "Authorization",
+        "token_format": "Bearer <token>"
+      },
+      "parameters": [
+        {
+          "name": "order_id",
+          "in": "path",
+          "required": true,
+          "type": "integer",
+          "sensitive": false,
+          "description": ""
+        }
+      ],
+      "request_body": null,
+      "responses": [
+        {
+          "status_code": "200",
+          "description": "Successful Response"
+        },
+        {
+          "status_code": "422",
+          "description": "Validation Error"
+        }
+      ],
+      "risk_hints": [
+        "BOLA"
+      ],
+      "reason": "Endpoint có path parameter định danh tài nguyên, cần kiểm thử truy cập tài nguyên thuộc người dùng khác."
+    },
+    {
+      "endpoint_id": "EP_007",
+      "path": "/api/orders",
+      "method": "POST",
+      "summary": "Create Order",
+      "description": "",
+      "operation_id": "create_order_api_orders_post",
+      "security": {
+        "required": true,
+        "schemes": [
+          "HTTPBearer"
+        ],
+        "type": "http",
+        "scheme": "bearer",
+        "header": "Authorization",
+        "token_format": "Bearer <token>"
+      },
+      "parameters": [],
+      "request_body": {
+        "required": true,
+        "content_type": "application/json",
+        "schema_ref": "#/components/schemas/OrderCreateRequest",
+        "schema_title": "OrderCreateRequest",
+        "fields": [
+          {
+            "name": "product_id",
+            "type": "integer",
+            "required": true,
+            "sensitive": false,
+            "source": "openapi_schema",
+            "description": ""
+          },
+          {
+            "name": "quantity",
+            "type": "integer",
+            "required": true,
+            "sensitive": false,
+            "source": "openapi_schema",
+            "description": ""
+          }
+        ],
+        "allows_additional_properties": true,
+        "candidate_injected_fields": []
+      },
+      "responses": [
+        {
+          "status_code": "201",
+          "description": "Successful Response"
+        },
+        {
+          "status_code": "422",
+          "description": "Validation Error"
+        }
+      ],
+      "risk_hints": [
+        "NORMAL"
+      ],
+      "reason": "Endpoint phục vụ luồng nghiệp vụ cơ bản của Target Lab, chưa có dấu hiệu trực tiếp thuộc các nhóm lỗ hổng trọng tâm BOLA, BFLA hoặc Mass Assignment."
+    },
+    {
+      "endpoint_id": "EP_008",
+      "path": "/api/admin/users",
+      "method": "GET",
+      "summary": "Admin Get All Users",
+      "description": "",
+      "operation_id": "admin_get_all_users_api_admin_users_get",
+      "security": {
+        "required": true,
+        "schemes": [
+          "HTTPBearer"
+        ],
+        "type": "http",
+        "scheme": "bearer",
+        "header": "Authorization",
+        "token_format": "Bearer <token>"
+      },
+      "parameters": [],
+      "request_body": null,
+      "responses": [
+        {
+          "status_code": "200",
+          "description": "Successful Response"
+        }
+      ],
+      "risk_hints": [
+        "BFLA"
+      ],
+      "reason": "Endpoint thuộc nhóm quản trị (/admin), cần kiểm thử user thường có gọi được chức năng vượt quyền hay không."
+    },
+    {
+      "endpoint_id": "EP_009",
+      "path": "/api/admin/orders/{order_id}/status",
+      "method": "PATCH",
+      "summary": "Update Order Status Admin",
+      "description": "",
+      "operation_id": "update_order_status_admin_api_admin_orders__order_id__status_patch",
+      "security": {
+        "required": true,
+        "schemes": [
+          "HTTPBearer"
+        ],
+        "type": "http",
+        "scheme": "bearer",
+        "header": "Authorization",
+        "token_format": "Bearer <token>"
+      },
+      "parameters": [
+        {
+          "name": "order_id",
+          "in": "path",
+          "required": true,
+          "type": "integer",
+          "sensitive": false,
+          "description": ""
+        }
+      ],
+      "request_body": {
+        "required": true,
+        "content_type": "application/json",
+        "schema_ref": null,
+        "schema_title": "Status Update",
+        "fields": [
+          {
+            "name": "status",
+            "type": "string",
+            "required": false,
+            "sensitive": true,
+            "source": "inferred_from_path",
+            "description": "Suy luận từ endpoint cập nhật trạng thái đơn hàng."
+          }
+        ],
+        "allows_additional_properties": true,
+        "candidate_injected_fields": []
+      },
+      "responses": [
+        {
+          "status_code": "200",
+          "description": "Successful Response"
+        },
+        {
+          "status_code": "422",
+          "description": "Validation Error"
+        }
+      ],
+      "risk_hints": [
+        "BFLA"
+      ],
+      "reason": "Endpoint thuộc nhóm quản trị (/admin), cần kiểm thử user thường có gọi được chức năng vượt quyền hay không."
+    },
+    {
+      "endpoint_id": "EP_010",
+      "path": "/scan-results",
+      "method": "GET",
+      "summary": "Scan Results Dashboard",
+      "description": "",
+      "operation_id": "scan_results_dashboard_scan_results_get",
+      "security": {
+        "required": false,
+        "schemes": [],
+        "type": null,
+        "scheme": null,
+        "header": null,
+        "token_format": null
+      },
+      "parameters": [],
+      "request_body": null,
+      "responses": [
+        {
+          "status_code": "200",
+          "description": "Successful Response"
+        }
+      ],
+      "risk_hints": [
+        "NORMAL"
+      ],
+      "reason": "Endpoint phục vụ luồng nghiệp vụ cơ bản của Target Lab, chưa có dấu hiệu trực tiếp thuộc các nhóm lỗ hổng trọng tâm BOLA, BFLA hoặc Mass Assignment."
+    }
+  ]
+}
